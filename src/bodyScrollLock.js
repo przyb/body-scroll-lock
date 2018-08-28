@@ -19,6 +19,7 @@ let documentListenerAdded: boolean = false;
 let initialClientY: number = -1;
 let previousBodyOverflowSetting;
 let previousBodyPaddingRight;
+let previousHtmlOverflowSetting;
 
 const preventDefault = (rawEvent: HandleScrollEvent): boolean => {
   const e = rawEvent || window.event;
@@ -47,6 +48,12 @@ const setOverflowHidden = (options?: BodyScrollOptions) => {
       previousBodyOverflowSetting = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
     }
+
+    if (previousHtmlOverflowSetting === undefined) {
+      previousHtmlOverflowSetting = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.classList.add('is-scroll-locked');
+    }
   });
 };
 
@@ -68,6 +75,15 @@ const restoreOverflowSetting = () => {
       // Restore previousBodyOverflowSetting to undefined
       // so setOverflowHidden knows it can be set again.
       previousBodyOverflowSetting = undefined;
+    }
+
+    if (previousHtmlOverflowSetting !== undefined) {
+      document.documentElement.style.overflow = previousHtmlOverflowSetting;
+      document.documentElement.classList.remove('is-scroll-locked');
+
+      // Restore previousHtmlOverflowSetting to undefined
+      // so setOverflowHidden knows it can be set again.
+      previousHtmlOverflowSetting = undefined;
     }
   });
 };
